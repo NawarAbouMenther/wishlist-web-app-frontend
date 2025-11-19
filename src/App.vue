@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import WishList from './components/WishList.vue'
 </script>
 
 <template>
@@ -8,8 +7,7 @@ import WishList from './components/WishList.vue'
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
     <div class="wrapper">
-      <WishList />
-
+      <h1>Meine Wunschliste</h1>
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
@@ -17,7 +15,7 @@ import WishList from './components/WishList.vue'
     </div>
   </header>
 
-  <RouterView />
+  <RouterView /> <!-- zeigt HomeView.vue oder About.vue -->
 </template>
 
 <style scoped>
