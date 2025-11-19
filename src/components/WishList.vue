@@ -17,7 +17,9 @@ onMounted(async () => {
   try {
     const response = await fetch(`${API_URL}/api/wishes`);
     if (!response.ok) throw new Error('Fehler beim Laden');
-    wishes.value = await response.json();
+    //wishes.value = await response.json();
+    const data: WishEntry[] = await response.json();
+    wishes.value = data;
   } catch (err) {
     console.error('Fehler beim Abrufen der Wünsche:', err);
   }
