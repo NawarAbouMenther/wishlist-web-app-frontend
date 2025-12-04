@@ -49,6 +49,19 @@ async function addWish() {
     alert('Fehler beim Speichern')
   }
 }
+
+async function deleteWish(id: number) {
+  const response = await fetch(`${API_URL}/api/wishes/${id}`, {
+    method: 'DELETE'
+  })
+
+  if (response.ok) {
+    await loadWishes() // Liste neu laden
+  } else {
+    console.error('Fehler beim Löschen des Wunschs')
+  }
+}
+
 </script>
 
 <template>
@@ -71,7 +84,10 @@ async function addWish() {
         <p><strong>Beschreibung:</strong> {{ wish.description }}</p>
         <p><strong>Status:</strong> {{ wish.status }}</p>
         <p><strong>Preis:</strong> {{ wish.price }} €</p>
+        <button v-if="wish.id !== undefined" @click="deleteWish(wish.id)">🗑️ Löschen</button>
       </li>
     </ul>
   </div>
+
+
 </template>
