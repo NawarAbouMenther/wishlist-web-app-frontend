@@ -75,7 +75,6 @@ async function deleteWish(id: number) {
       <input v-model.number="newWish.price" type="number" placeholder="Preis (€)" required />
       <button type="submit">Hinzufügen</button>
     </form>
-
     <h2>Meine Wunschliste</h2>
     <ul>
       <li v-for="wish in wishes" :key="wish.id">
