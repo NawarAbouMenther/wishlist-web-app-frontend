@@ -20,7 +20,8 @@ const newWish = ref<WishEntry>({
   name: '',
   description: '',
   status: '',
-  price: 0
+  price: 0,
+  fulfilled: false
 })
 
 // Laden beim Start
@@ -45,7 +46,7 @@ async function addWish() {
     // Liste neu laden
     await loadWishes()
     // Formular leeren
-    newWish.value = { title: '', name: '', description: '', status: '', price: 0 }
+    newWish.value = { title: '', name: '', description: '', status: '', price: 0, fulfilled: false }
   } else {
     alert('Fehler beim Speichern')
   }
