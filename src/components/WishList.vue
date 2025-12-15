@@ -63,17 +63,19 @@ async function deleteWish(id: number) {
   }
 }
 
-async function markAsFulfilled(id?: number) {
-  if (!id) return
-
-  const response = await fetch(`${API_URL}/api/wishes/${id}/fulfilled`, {
-    method: 'PUT'
+async function markAsFulfilled(id: number) {
+  const response = await fetch(`${API_URL}/api/wishes/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ fulfilled: true })
   })
 
   if (response.ok) {
     await loadWishes()
   } else {
-    alert('Fehler beim Aktualisieren')
+    console.error('Fehler beim Aktualisieren des Wunschs')
   }
 }
 
@@ -101,7 +103,11 @@ async function markAsFulfilled(id?: number) {
         <p><strong>Status:</strong> {{ wish.status }}</p>
         <p><strong>Preis:</strong> {{ wish.price }} €</p>
         <button v-if="wish.id !== undefined" @click="deleteWish(wish.id)">🗑️ Löschen</button>
-        <button @click="markAsFulfilled(wish.id)">✔️ Erfüllt</button>
+        <button v-if="wish.id !== undefined" @click="markAsFulfilled(wish.id)">✔️ Als erfüllt markieren</button>
+        <div v-if="wish.fulfilled" style="color: green; font-weight: bold">
+          ✅ erfüllt!
+        </div>
+
 
       </li>
     </ul>
