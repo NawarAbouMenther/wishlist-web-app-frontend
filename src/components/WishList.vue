@@ -8,6 +8,7 @@ interface WishEntry {
   description: string
   status: string
   price: number
+  fulfilled?: boolean
 }
 
 const wishes = ref<WishEntry[]>([])
@@ -62,6 +63,21 @@ async function deleteWish(id: number) {
   }
 }
 
+async function markAsFulfilled(id?: number) {
+  if (!id) return
+
+  const response = await fetch(`${API_URL}/api/wishes/${id}/fulfilled`, {
+    method: 'PUT'
+  })
+
+  if (response.ok) {
+    await loadWishes()
+  } else {
+    alert('Fehler beim Aktualisieren')
+  }
+}
+
+
 </script>
 
 <template>
@@ -74,6 +90,7 @@ async function deleteWish(id: number) {
       <input v-model="newWish.status" placeholder="Status" required />
       <input v-model.number="newWish.price" type="number" placeholder="Preis (€)" required />
       <button type="submit">Hinzufügen</button>
+
     </form>
     <h2>Meine Wunschliste</h2>
     <ul>
@@ -84,6 +101,8 @@ async function deleteWish(id: number) {
         <p><strong>Status:</strong> {{ wish.status }}</p>
         <p><strong>Preis:</strong> {{ wish.price }} €</p>
         <button v-if="wish.id !== undefined" @click="deleteWish(wish.id)">🗑️ Löschen</button>
+        <button @click="markAsFulfilled(wish.id)">✔️ Erfüllt</button>
+
       </li>
     </ul>
   </div>
