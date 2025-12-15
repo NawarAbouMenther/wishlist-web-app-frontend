@@ -66,7 +66,7 @@ async function deleteWish(id: number) {
 
 async function markAsFulfilled(id: number) {
   const response = await fetch(`${API_URL}/api/wishes/${id}`, {
-    method: 'PATCH',
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
     },
