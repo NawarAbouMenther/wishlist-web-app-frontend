@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 interface WishEntry {
   id?: number
@@ -24,7 +24,10 @@ const newWish = ref<WishEntry>({
 })
 
 const editingWish = ref<WishEntry | null>(null)
+const sortOrder = ref<'asc' | 'desc'>('asc')
+const filterStatus = ref<'all' | 'fulfilled' | 'open'>('all')
 
+// 💡 Wünsche laden beim Mounten
 onMounted(loadWishes)
 
 async function loadWishes() {
@@ -122,6 +125,28 @@ async function markAsFulfilled(wish: WishEntry) {
     console.error(error)
   }
 }
+
+// ✅ Filtern + Sortieren
+const filteredAndSortedWishes = computed(() => {
+  let result = [...wishes.value]
+
+  if (filterStatus.value === 'fulfilled') {
+    result = result.filter(w => w.fulfilled)
+  } else if (filterStatus.value === 'open') {
+    result = result.filter(w => !w.fulfilled)
+  }
+
+  result.sort((a, b) =>
+    sortOrder.value === 'asc' ? a.price - b.price : b.price - a.price
+  )
+
+  return result
+})
+
+// ✅ Gesamtsumme berechnen
+const totalPrice = computed(() =>
+  filteredAndSortedWishes.value.reduce((sum, wish) => sum + wish.price, 0)
+)
 </script>
 
 <template>
@@ -137,8 +162,20 @@ async function markAsFulfilled(wish: WishEntry) {
     </form>
 
     <h2>Meine Wunschliste</h2>
+
+    <div style="margin-bottom: 1rem;">
+      <strong>Sortieren nach Preis:</strong>
+      <button @click="sortOrder = 'asc'">⬆️ Aufsteigend</button>
+      <button @click="sortOrder = 'desc'">⬇️ Absteigend</button>
+
+      <strong style="margin-left: 1rem;">Filtern:</strong>
+      <button @click="filterStatus = 'all'">📋 Alle</button>
+      <button @click="filterStatus = 'open'">🕓 Offen</button>
+      <button @click="filterStatus = 'fulfilled'">✅ Erfüllt</button>
+    </div>
+
     <ul>
-      <li v-for="wish in wishes" :key="wish.id">
+      <li v-for="wish in filteredAndSortedWishes" :key="wish.id">
         <!-- Bearbeitungsmodus -->
         <div v-if="editingWish?.id === wish.id">
           <input v-model="editingWish!.title" placeholder="Titel" />
@@ -150,7 +187,7 @@ async function markAsFulfilled(wish: WishEntry) {
           <button @click="cancelEdit">❌ Abbrechen</button>
         </div>
 
-        <!-- Ansichtsmodus -->
+        <!-- Normalansicht -->
         <div v-else>
           <h3>{{ wish.title }}</h3>
           <p><strong>Name:</strong> {{ wish.name }}</p>
@@ -163,11 +200,17 @@ async function markAsFulfilled(wish: WishEntry) {
           <button v-if="!wish.fulfilled" @click="markAsFulfilled(wish)">
             ✔️ Als erfüllt markieren
           </button>
+
           <div v-if="wish.fulfilled" style="color: green; font-weight: bold">
             ✅ erfüllt!
           </div>
         </div>
       </li>
     </ul>
+
+    <!-- ✅ Gesamtsumme anzeigen -->
+    <div style="margin-top: 1rem; font-weight: bold;">
+      Gesamtsumme: {{ totalPrice }} €
+    </div>
   </div>
 </template>
