@@ -4,10 +4,10 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <template>
   <div class="layout">
-    <!-- Linke Sidebar -->
+    <!-- Sidebar -->
     <aside class="sidebar">
-      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" />
-      <h1 class="title">Meine Wunschliste</h1>
+      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="100" height="100" />
+      <h1>Meine Wunschliste</h1>
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
@@ -22,66 +22,89 @@ import { RouterLink, RouterView } from 'vue-router'
 </template>
 
 <style scoped>
+/* Layout: Sidebar + Content */
 .layout {
   display: flex;
-  min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  height: 100vh;
+  background-color: #fff0f5; /* Heller Hintergrund */
+  font-family: 'Segoe UI', sans-serif;
 }
 
-/* Sidebar-Design */
+/* SIDEBAR */
 .sidebar {
-  width: 150px;
-  background-color: white;
-  padding: 2rem 1rem;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex: 0 0 180px;
+  padding: 1.5rem 1rem;
+  background-color: #ffffff;
+  border-right: 1px solid #eee;
+  text-align: center;
 }
 
 .logo {
-  width: 80px;
   margin-bottom: 1rem;
 }
 
-.title {
+.sidebar h1 {
   font-size: 1rem;
-  text-align: center;
+  margin-bottom: 1rem;
   font-weight: bold;
-  margin-bottom: 2rem;
   color: #333;
 }
 
-/* Navigation */
-nav {
+.sidebar nav {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 0.8rem;
 }
 
-nav a {
+.sidebar nav a {
+  color: #333;
   text-decoration: none;
-  color: #555;
-  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
 }
 
-nav a.router-link-exact-active {
-  color: #e91e63; /* Pink aktiv */
+.sidebar nav a.router-link-exact-active {
   font-weight: bold;
+  color: #ff69b4; /* Pink */
 }
 
-/* Hauptinhalt */
+.sidebar nav a:hover {
+  color: #d63384;
+}
+
+/* CONTENT */
 .main-content {
   flex: 1;
-  display: flex;
-  justify-content: center; /* Inhalt zentrieren */
   padding: 2rem;
-  background-color: #fff8fb;
+  overflow-y: auto;
 }
 
-.main-content > * {
-  max-width: 960px; /* maximale Breite */
-  width: 100%;
+/* Prioritäten-Farben (z. B. für Dropdown) */
+select option[value="hoch"] {
+  background-color: #ffb3c6;
+}
+
+select option[value="mittel"] {
+  background-color: #ffc2d1;
+}
+
+select option[value="niedrig"] {
+  background-color: #ffe5ec;
+}
+
+/* Optional: Einheitliches Button-Styling */
+button {
+  border-radius: 5px;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  background-color: #ffb3c6;
+  color: #333;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #ffa1b9;
 }
 </style>
