@@ -221,7 +221,7 @@ const totalPrice = computed(() =>
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #f1e2e2;
+  background-color: #ffffff;
   border-radius: 1rem;
 }
 

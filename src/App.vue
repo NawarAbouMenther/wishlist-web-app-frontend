@@ -64,7 +64,7 @@ nav a.router-link-exact-active {
   max-width: 960px;
   margin: 0 auto;
   padding: 2rem 1rem;
-  background-color: #fff0f5;
+  background-color: #ffffff;
   min-height: 100vh;
 }
 </style>
