@@ -132,11 +132,11 @@ async function markAsFulfilled(wish: WishEntry) {
 function getPriorityColor(priority: string): string {
   switch (priority) {
     case 'hoch':
-      return '#fb6f92' // helleres Rosa
+      return '#ffb3c6' // helleres Rosa
     case 'mittel':
-      return '#ff8fab'
+      return '#ffc2d1'
     case 'niedrig':
-      return '#ffb3c6'
+      return '#ffe5ec'
     default:
       return '#ffffff'
   }

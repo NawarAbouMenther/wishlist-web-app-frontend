@@ -3,81 +3,78 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <h1>Meine Wunschliste</h1>
+  <div class="layout">
+    <!-- Linke Sidebar -->
+    <aside class="sidebar">
+      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" />
+      <h1 class="title">Meine Wunschliste</h1>
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
       </nav>
-    </div>
-  </header>
+    </aside>
 
-  <RouterView /> <!-- zeigt HomeView.vue oder About.vue -->
+    <!-- Hauptinhalt -->
+    <main class="main-content">
+      <RouterView />
+    </main>
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.layout {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Sidebar-Design */
+.sidebar {
+  width: 150px;
+  background-color: white;
+  padding: 2rem 1rem;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .logo {
-  display: block;
-  margin: 0 auto 2rem;
+  width: 80px;
+  margin-bottom: 1rem;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
+.title {
+  font-size: 1rem;
   text-align: center;
-  margin-top: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #333;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+/* Navigation */
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+  text-decoration: none;
+  color: #555;
+  font-weight: 500;
 }
 
-nav a:first-of-type {
-  border: 0;
+nav a.router-link-exact-active {
+  color: #e91e63; /* Pink aktiv */
+  font-weight: bold;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+/* Hauptinhalt */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  background-color: #fff8fb;
 }
 </style>
