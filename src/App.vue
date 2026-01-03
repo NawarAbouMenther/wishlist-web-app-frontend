@@ -55,16 +55,7 @@ nav a {
 }
 
 nav a.router-link-exact-active {
-  color: #ff69b4;
-  font-weight: bold;
+  color: #555555;
 }
 
-/* Content Bereich */
-.main-container {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  background-color: #ffffff;
-  min-height: 100vh;
-}
 </style>
