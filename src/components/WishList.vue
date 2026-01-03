@@ -30,6 +30,15 @@ const sortOrder = ref<'asc' | 'desc'>('asc')
 const filterStatus = ref<'all' | 'fulfilled' | 'open'>('all')
 const filterPriority = ref<'all' | 'hoch' | 'mittel' | 'niedrig'>('all')
 
+function getPriorityColor(priority: string): string {
+  switch (priority) {
+    case 'hoch': return '#ffb3c6'
+    case 'mittel': return '#ffc2d1'
+    case 'niedrig': return '#ffe5ec'
+    default: return '#ffffff'
+  }
+}
+
 onMounted(loadWishes)
 
 async function loadWishes() {
@@ -129,19 +138,6 @@ async function markAsFulfilled(wish: WishEntry) {
   }
 }
 
-function getPriorityColor(priority: string): string {
-  switch (priority) {
-    case 'hoch':
-      return '#ffb3c6' // helleres Rosa
-    case 'mittel':
-      return '#ffc2d1'
-    case 'niedrig':
-      return '#ffe5ec'
-    default:
-      return '#ffffff'
-  }
-}
-
 const filteredAndSortedWishes = computed(() => {
   let result = [...wishes.value]
 
@@ -168,93 +164,117 @@ const totalPrice = computed(() =>
 </script>
 
 <template>
-  <div style="padding: 2rem; background-color: #fff8fb; min-height: 100vh; font-family: sans-serif;">
-    <h2 style="color: #ff7fa3; font-weight: bold;">🎁 Neuen Wunsch hinzufügen</h2>
-    <form @submit.prevent="addWish" style="margin-bottom: 2rem;">
-      <input v-model="newWish.title" placeholder="Titel" required />
-      <input v-model="newWish.name" placeholder="Name" required />
-      <input v-model="newWish.description" placeholder="Beschreibung" required />
-      <input v-model="newWish.status" placeholder="Status" required />
-      <input v-model.number="newWish.price" type="number" placeholder="Preis (€)" required />
-      <select v-model="newWish.priority">
-        <option value="hoch">🔴 Hoch</option>
-        <option value="mittel">🟡 Mittel</option>
-        <option value="niedrig">🟢 Niedrig</option>
-      </select>
-      <button type="submit">➕ Hinzufügen</button>
-    </form>
+  <div class="container">
+    <section class="form-section">
+      <h2>🎁 <strong>Neuen Wunsch hinzufügen</strong></h2>
+      <form @submit.prevent="addWish">
+        <input v-model="newWish.title" placeholder="Titel" required />
+        <input v-model="newWish.name" placeholder="Name" required />
+        <input v-model="newWish.description" placeholder="Beschreibung" required />
+        <input v-model="newWish.status" placeholder="Status" required />
+        <input v-model.number="newWish.price" type="number" placeholder="Preis (€)" required />
+        <select v-model="newWish.priority">
+          <option value="hoch" :style="{ backgroundColor: getPriorityColor('hoch') }">Hoch</option>
+          <option value="mittel" :style="{ backgroundColor: getPriorityColor('mittel') }">Mittel</option>
+          <option value="niedrig" :style="{ backgroundColor: getPriorityColor('niedrig') }">Niedrig</option>
+        </select>
+        <button type="submit">➕ Hinzufügen</button>
+      </form>
+    </section>
 
-    <h2 style="color: #ff7fa3; font-weight: bold;">📝 Meine Wunschliste</h2>
+    <section>
+      <h2>🖋 <strong>Meine Wunschliste</strong></h2>
 
-    <div style="margin-bottom: 1rem;">
-      <strong>Sortieren nach Preis:</strong>
-      <button @click="sortOrder = 'asc'">⬆️ Aufsteigend</button>
-      <button @click="sortOrder = 'desc'">⬇️ Absteigend</button>
+      <div class="controls">
+        <span>Sortieren nach Preis:</span>
+        <button @click="sortOrder = 'asc'">🔼 Aufsteigend</button>
+        <button @click="sortOrder = 'desc'">🔽 Absteigend</button>
 
-      <strong style="margin-left: 1rem;">Filtern nach Status:</strong>
-      <button @click="filterStatus = 'all'">📋 Alle</button>
-      <button @click="filterStatus = 'open'">🕓 Offen</button>
-      <button @click="filterStatus = 'fulfilled'">✅ Erfüllt</button>
+        <span>Filtern nach Status:</span>
+        <button @click="filterStatus = 'all'">📄 Alle</button>
+        <button @click="filterStatus = 'open'">⏳ Offen</button>
+        <button @click="filterStatus = 'fulfilled'">✅ Erfüllt</button>
 
-      <strong style="margin-left: 1rem;">Priorität:</strong>
-      <select v-model="filterPriority">
-        <option value="all">Alle</option>
-        <option value="hoch">🔴 Hoch</option>
-        <option value="mittel">🟡 Mittel</option>
-        <option value="niedrig">🟢 Niedrig</option>
-      </select>
-    </div>
+        <span>Priorität:</span>
+        <select v-model="filterPriority">
+          <option value="all">Alle</option>
+          <option value="hoch" :style="{ backgroundColor: getPriorityColor('hoch') }">Hoch</option>
+          <option value="mittel" :style="{ backgroundColor: getPriorityColor('mittel') }">Mittel</option>
+          <option value="niedrig" :style="{ backgroundColor: getPriorityColor('niedrig') }">Niedrig</option>
+        </select>
+      </div>
 
-    <ul style="list-style: none; padding: 0;">
-      <li
-        v-for="wish in filteredAndSortedWishes"
-        :key="wish.id"
-        :style="{
-          backgroundColor: getPriorityColor(wish.priority),
-          padding: '1rem',
-          marginBottom: '1rem',
-          borderRadius: '12px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-        }"
-      >
-        <div v-if="editingWish?.id === wish.id">
-          <input v-model="editingWish!.title" placeholder="Titel" />
-          <input v-model="editingWish!.name" placeholder="Name" />
-          <input v-model="editingWish!.description" placeholder="Beschreibung" />
-          <input v-model="editingWish!.status" placeholder="Status" />
-          <input v-model.number="editingWish!.price" type="number" placeholder="Preis (€)" />
-          <select v-model="editingWish!.priority">
-            <option value="hoch">🔴 Hoch</option>
-            <option value="mittel">🟡 Mittel</option>
-            <option value="niedrig">🟢 Niedrig</option>
-          </select>
-          <button @click="updateWish">💾 Speichern</button>
-          <button @click="cancelEdit">❌ Abbrechen</button>
-        </div>
-
-        <div v-else>
-          <h3>{{ wish.title }}</h3>
-          <p><strong>Name:</strong> {{ wish.name }}</p>
-          <p><strong>Beschreibung:</strong> {{ wish.description }}</p>
-          <p><strong>Status:</strong> {{ wish.status }}</p>
-          <p><strong>Preis:</strong> {{ wish.price }} €</p>
-          <p><strong>Priorität:</strong> {{ wish.priority }}</p>
-
-          <button @click="editWish(wish)">✏️ Bearbeiten</button>
-          <button @click="deleteWish(wish.id!)">🗑️ Löschen</button>
-          <button v-if="!wish.fulfilled" @click="markAsFulfilled(wish)">
-            ✔️ Als erfüllt markieren
-          </button>
-
-          <div v-if="wish.fulfilled" style="color: green; font-weight: bold">
-            ✅ erfüllt!
+      <ul>
+        <li v-for="wish in filteredAndSortedWishes" :key="wish.id" class="wish-card" :style="{ backgroundColor: getPriorityColor(wish.priority) }">
+          <div v-if="editingWish?.id === wish.id">
+            <input v-model="editingWish!.title" />
+            <input v-model="editingWish!.name" />
+            <input v-model="editingWish!.description" />
+            <input v-model="editingWish!.status" />
+            <input v-model.number="editingWish!.price" type="number" />
+            <select v-model="editingWish!.priority">
+              <option value="hoch" :style="{ backgroundColor: getPriorityColor('hoch') }">Hoch</option>
+              <option value="mittel" :style="{ backgroundColor: getPriorityColor('mittel') }">Mittel</option>
+              <option value="niedrig" :style="{ backgroundColor: getPriorityColor('niedrig') }">Niedrig</option>
+            </select>
+            <button @click="updateWish">💾 Speichern</button>
+            <button @click="cancelEdit">❌ Abbrechen</button>
           </div>
-        </div>
-      </li>
-    </ul>
 
-    <div style="margin-top: 1rem; font-weight: bold;">
-      Gesamtsumme: {{ totalPrice }} €
-    </div>
+          <div v-else>
+            <h3>{{ wish.title }}</h3>
+            <p><strong>Name:</strong> {{ wish.name }}</p>
+            <p><strong>Beschreibung:</strong> {{ wish.description }}</p>
+            <p><strong>Status:</strong> {{ wish.status }}</p>
+            <p><strong>Preis:</strong> {{ wish.price }} €</p>
+            <p><strong>Priorität:</strong> {{ wish.priority }}</p>
+
+            <button @click="editWish(wish)">✏️ Bearbeiten</button>
+            <button @click="deleteWish(wish.id!)">🗑️ Löschen</button>
+            <button v-if="!wish.fulfilled" @click="markAsFulfilled(wish)">
+              ✔️ Als erfüllt markieren
+            </button>
+
+            <div v-if="wish.fulfilled" style="color: green; font-weight: bold">
+              ✅ erfüllt!
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <div style="margin-top: 1rem; font-weight: bold">
+        Gesamtsumme: {{ totalPrice }} €
+      </div>
+    </section>
   </div>
 </template>
+
+<style scoped>
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+  background-color: #fff0f5;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.controls {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.wish-card {
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+</style>
