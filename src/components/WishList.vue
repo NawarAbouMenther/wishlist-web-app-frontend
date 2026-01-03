@@ -9,6 +9,7 @@ interface WishEntry {
   status: string
   price: number
   fulfilled?: boolean
+  priority: string
 }
 
 const wishes = ref<WishEntry[]>([])
@@ -20,14 +21,15 @@ const newWish = ref<WishEntry>({
   description: '',
   status: '',
   price: 0,
-  fulfilled: false
+  fulfilled: false,
+  priority: 'mittel' // ✅ Standardwert
 })
 
 const editingWish = ref<WishEntry | null>(null)
 const sortOrder = ref<'asc' | 'desc'>('asc')
 const filterStatus = ref<'all' | 'fulfilled' | 'open'>('all')
 
-// 💡 Wünsche laden beim Mounten
+// 💡 Wünsche laden beim Start
 onMounted(loadWishes)
 
 async function loadWishes() {
@@ -58,7 +60,8 @@ async function addWish() {
       description: '',
       status: '',
       price: 0,
-      fulfilled: false
+      fulfilled: false,
+      priority: 'mittel'
     }
   } catch (error) {
     alert('Fehler beim Speichern')
@@ -126,7 +129,6 @@ async function markAsFulfilled(wish: WishEntry) {
   }
 }
 
-// ✅ Filtern + Sortieren
 const filteredAndSortedWishes = computed(() => {
   let result = [...wishes.value]
 
@@ -143,7 +145,6 @@ const filteredAndSortedWishes = computed(() => {
   return result
 })
 
-// ✅ Gesamtsumme berechnen
 const totalPrice = computed(() =>
   filteredAndSortedWishes.value.reduce((sum, wish) => sum + wish.price, 0)
 )
@@ -158,6 +159,11 @@ const totalPrice = computed(() =>
       <input v-model="newWish.description" placeholder="Beschreibung" required />
       <input v-model="newWish.status" placeholder="Status" required />
       <input v-model.number="newWish.price" type="number" placeholder="Preis (€)" required />
+      <select v-model="newWish.priority">
+        <option value="hoch">🔴 Hoch</option>
+        <option value="mittel">🟡 Mittel</option>
+        <option value="niedrig">🟢 Niedrig</option>
+      </select>
       <button type="submit">Hinzufügen</button>
     </form>
 
@@ -183,6 +189,11 @@ const totalPrice = computed(() =>
           <input v-model="editingWish!.description" placeholder="Beschreibung" />
           <input v-model="editingWish!.status" placeholder="Status" />
           <input v-model.number="editingWish!.price" type="number" placeholder="Preis (€)" />
+          <select v-model="editingWish!.priority">
+            <option value="hoch">🔴 Hoch</option>
+            <option value="mittel">🟡 Mittel</option>
+            <option value="niedrig">🟢 Niedrig</option>
+          </select>
           <button @click="updateWish">💾 Speichern</button>
           <button @click="cancelEdit">❌ Abbrechen</button>
         </div>
@@ -194,6 +205,7 @@ const totalPrice = computed(() =>
           <p><strong>Beschreibung:</strong> {{ wish.description }}</p>
           <p><strong>Status:</strong> {{ wish.status }}</p>
           <p><strong>Preis:</strong> {{ wish.price }} €</p>
+          <p><strong>Priorität:</strong> {{ wish.priority }}</p>
 
           <button @click="editWish(wish)">✏️ Bearbeiten</button>
           <button @click="deleteWish(wish.id!)">🗑️ Löschen</button>
@@ -208,7 +220,6 @@ const totalPrice = computed(() =>
       </li>
     </ul>
 
-    <!-- ✅ Gesamtsumme anzeigen -->
     <div style="margin-top: 1rem; font-weight: bold;">
       Gesamtsumme: {{ totalPrice }} €
     </div>
