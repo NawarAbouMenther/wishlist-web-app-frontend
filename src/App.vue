@@ -74,7 +74,14 @@ nav a.router-link-exact-active {
 /* Hauptinhalt */
 .main-content {
   flex: 1;
+  display: flex;
+  justify-content: center; /* Inhalt zentrieren */
   padding: 2rem;
   background-color: #fff8fb;
+}
+
+.main-content > * {
+  max-width: 960px; /* maximale Breite */
+  width: 100%;
 }
 </style>
