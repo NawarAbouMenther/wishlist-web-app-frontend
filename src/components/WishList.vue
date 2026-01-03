@@ -168,12 +168,12 @@ const totalPrice = computed(() =>
     <ul>
       <li v-for="wish in filteredAndSortedWishes" :key="wish.id">
         <div v-if="editingWish?.id === wish.id">
-          <input v-model="editingWish.title" />
-          <input v-model="editingWish.name" />
-          <input v-model="editingWish.description" />
-          <input v-model="editingWish.status" />
-          <input v-model.number="editingWish.price" />
-          <select v-model="editingWish.priority">
+          <input v-model="editingWish!.title" />
+          <input v-model="editingWish!.name" />
+          <input v-model="editingWish!.description" />
+          <input v-model="editingWish!.status" />
+          <input v-model.number="editingWish!.price" />
+          <select v-model="editingWish!.priority">
             <option value="hoch">🔴 Hoch</option>
             <option value="mittel">🟡 Mittel</option>
             <option value="niedrig">🟢 Niedrig</option>
