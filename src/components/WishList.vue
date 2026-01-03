@@ -32,19 +32,6 @@ const filterPriority = ref<'all' | 'hoch' | 'mittel' | 'niedrig'>('all')
 
 onMounted(loadWishes)
 
-function getPriorityColor(priority: string): string {
-  switch (priority) {
-    case 'hoch':
-      return '#ffb3c6'
-    case 'mittel':
-      return '#ffc2d1'
-    case 'niedrig':
-      return '#ffe5ec'
-    default:
-      return '#ffffff'
-  }
-}
-
 async function loadWishes() {
   const response = await fetch(`${API_URL}/api/wishes`)
   wishes.value = await response.json()
@@ -136,15 +123,14 @@ const totalPrice = computed(() =>
       <input v-model.number="newWish.price" type="number" placeholder="Preis (€)" required />
 
       <select v-model="newWish.priority">
-        <option value="hoch" :style="{ backgroundColor: getPriorityColor('hoch') }">Hoch</option>
-        <option value="mittel" :style="{ backgroundColor: getPriorityColor('mittel') }">Mittel</option>
-        <option value="niedrig" :style="{ backgroundColor: getPriorityColor('niedrig') }">Niedrig</option>
+        <option value="hoch">Hoch</option>
+        <option value="mittel">Mittel</option>
+        <option value="niedrig">Niedrig</option>
       </select>
 
       <button type="submit">➕ Hinzufügen</button>
     </form>
 
-    <!-- 📋 LISTEN-EMOJI (kein Stift) -->
     <h2 class="title">📋 Meine Wunschliste</h2>
 
     <div class="controls">
@@ -163,19 +149,23 @@ const totalPrice = computed(() =>
         Priorität:
         <select v-model="filterPriority">
           <option value="all">Alle</option>
-          <option value="hoch" :style="{ backgroundColor: getPriorityColor('hoch') }">Hoch</option>
-          <option value="mittel" :style="{ backgroundColor: getPriorityColor('mittel') }">Mittel</option>
-          <option value="niedrig" :style="{ backgroundColor: getPriorityColor('niedrig') }">Niedrig</option>
+          <option value="hoch">Hoch</option>
+          <option value="mittel">Mittel</option>
+          <option value="niedrig">Niedrig</option>
         </select>
       </div>
     </div>
 
+    <!-- KARTEN -->
     <ul class="wish-list">
       <li
         v-for="wish in filteredAndSortedWishes"
         :key="wish.id"
-        :style="{ backgroundColor: getPriorityColor(wish.priority) }"
+        class="wish-card"
       >
+        <!-- ✅ ERFÜLLT BADGE RECHTS OBEN -->
+        <span v-if="wish.fulfilled" class="fulfilled-badge">✓ erfüllt</span>
+
         <div v-if="editingWish?.id === wish.id">
           <input v-model="editingWish!.title" />
           <input v-model="editingWish!.name" />
@@ -194,20 +184,25 @@ const totalPrice = computed(() =>
         </div>
 
         <div v-else>
-          <!-- ✅ TITEL FETT -->
           <h3 class="wish-title">{{ wish.title }}</h3>
 
-          <p><strong>Name:</strong> {{ wish.name }}</p>
-          <p><strong>Beschreibung:</strong> {{ wish.description }}</p>
-          <p><strong>Status:</strong> {{ wish.status }}</p>
-          <p><strong>Preis:</strong> {{ wish.price }} €</p>
-          <p><strong>Priorität:</strong> {{ wish.priority }}</p>
+          <p class="description">{{ wish.description }}</p>
 
-          <button @click="editWish(wish)">✏️</button>
-          <button @click="deleteWish(wish.id!)">🗑️</button>
-          <button v-if="!wish.fulfilled" @click="markAsFulfilled(wish)">✔️</button>
+          <div class="details">
+            <span><strong>Name:</strong> {{ wish.name }}</span>
+            <span><strong>Status:</strong> {{ wish.status }}</span>
+          </div>
 
-          <div v-if="wish.fulfilled" class="fulfilled">✅ erfüllt!</div>
+          <div class="meta">
+            <span class="badge" :class="wish.priority">{{ wish.priority }}</span>
+            <span class="price">{{ wish.price }} €</span>
+          </div>
+
+          <div class="actions">
+            <button @click="editWish(wish)">✏️</button>
+            <button @click="deleteWish(wish.id!)">🗑️</button>
+            <button v-if="!wish.fulfilled" @click="markAsFulfilled(wish)">✔️</button>
+          </div>
         </div>
       </li>
     </ul>
@@ -218,18 +213,16 @@ const totalPrice = computed(() =>
 
 <style scoped>
 .container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #ffffff;
-  border-radius: 1rem;
 }
 
 .title {
   font-size: 1.6rem;
   font-weight: bold;
-  color: #ff4d88;
-  margin-top: 1rem;
+  color: #e840b2;
+  margin-bottom: 1rem;
 }
 
 .wish-form,
@@ -243,32 +236,88 @@ const totalPrice = computed(() =>
 .wish-list {
   list-style: none;
   padding: 0;
-  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.wish-card {
+  position: relative; /* wichtig für Badge */
+  background: white;
+  border-radius: 1.2rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.fulfilled-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #d3f9d8;
+  color: #2f9e44;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+}
+
+.wish-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.description {
+  color: #555;
+  margin-bottom: 0.75rem;
+}
+
+.details {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: #444;
 }
 
-.wish-list li {
-  padding: 1rem;
-  border-radius: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
 }
 
-/* ✅ TITEL DER KARTE FETT */
-.wish-title {
+.price {
   font-weight: bold;
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+  color: #e840b2;
 }
 
-.fulfilled {
-  color: green;
-  font-weight: bold;
+.badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge.hoch {
+  background: #ffe3e3;
+  color: #ef20ac;
+}
+.badge.mittel {
+  background: #ffe3e3;
+  color: #da5d98;
+}
+.badge.niedrig {
+  background: #ffe3e3;
+  color: #ed86a9;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
 
 .total {
-  margin-top: 1rem;
+  margin-top: 2rem;
   font-weight: bold;
 }
 </style>
