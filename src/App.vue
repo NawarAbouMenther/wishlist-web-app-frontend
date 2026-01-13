@@ -1,9 +1,13 @@
+<script setup lang="ts">
+import logo from '@/assets/logo.png'
+</script>
+
 <template>
   <div id="app">
     <!-- 🌟 Header -->
     <header class="header">
       <div class="header-content">
-        <img src="/logo.png" alt="Logo" class="logo" @click="$router.push('/')" />
+        <img :src="logo" alt="Logo" class="logo" @click="$router.push('/')" />
         <h1 class="title">Wunschlisten-Creator</h1>
       </div>
     </header>
@@ -25,7 +29,7 @@ body::before {
   transform: translate(-50%, -50%);
   width: 65vw;
   height: 65vw;
-  background-image: url("/logo.png");
+  background-image: url("@/assets/logo.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -35,11 +39,11 @@ body::before {
   z-index: 0;
 }
 
-
+/* ⭐ Animation */
 @keyframes gradientShift {
-  0% {background-position: 0% 50%;}
-  50% {background-position: 100% 50%;}
-  100% {background-position: 0% 50%;}
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* 🌟 HEADER */
@@ -64,12 +68,12 @@ body::before {
   padding-left: 35px;
 }
 
-/* 🐻 Logo – größer + Glow */
+/* 🐻 Logo */
 .logo {
   height: 110px;
   cursor: pointer;
   transition: 0.25s ease;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.18));
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.18));
 }
 
 .logo:hover {
@@ -77,7 +81,7 @@ body::before {
   filter: drop-shadow(0 6px 16px rgb(237, 107, 196));
 }
 
-/* 💖 Titel – helleres Pink */
+/* 💖 Titel */
 .title {
   font-size: 2.4rem;
   margin: 0;
@@ -88,7 +92,7 @@ body::before {
 
 /* 📄 Inhaltsbereich */
 .main-wrapper {
-  padding-top: 150px; /* Platz für Header */
+  padding-top: 150px;
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
