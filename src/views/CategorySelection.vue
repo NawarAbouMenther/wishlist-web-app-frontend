@@ -1,19 +1,30 @@
 <script setup lang="ts">
+import { ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
+const categories = ref<{ id: number; key: string; label: string }[]>([])
 
-// Kategorien mit Icon + Name
-const categories = [
-  { id: "birthday", label: "Geburtstag", icon: "🎂" },
-  { id: "christmas", label: "Weihnachten", icon: "🎄" },
-  { id: "wedding", label: "Hochzeit", icon: "💍" },
-  { id: "baby", label: "Baby-Party", icon: "👶" },
-  { id: "wishlist", label: "Wunschliste", icon: "🎁" },
-  { id: "custom", label: "Eigene Kategorie", icon: "✨" }
-]
+const API_URL = import.meta.env.VITE_API_URL
 
-function openCategory(id: string) {
+// Icons passend zu deinem alten Design
+const icons: Record<string, string> = {
+  birthday: "🎂",
+  christmas: "🎄",
+  wedding: "💍",
+  baby: "👶",
+  wishlist: "🎁",
+  custom: "✨"
+}
+
+onMounted(loadCategories)
+
+async function loadCategories() {
+  const res = await fetch(`${API_URL}/api/categories`)
+  categories.value = await res.json()
+}
+
+function openCategory(id: number) {
   router.push(`/category/${id}`)
 }
 </script>
@@ -29,8 +40,12 @@ function openCategory(id: string) {
         class="card"
         @click="openCategory(cat.id)"
       >
-        <div class="icon">{{ cat.icon }}</div>
-        <div class="text">{{ cat.label }}</div>
+        <div class="icon">
+          {{ icons[cat.key] || "📦" }}
+        </div>
+        <div class="text">
+          {{ cat.label }}
+        </div>
       </div>
     </div>
   </div>
@@ -60,7 +75,7 @@ function openCategory(id: string) {
   background: white;
   padding: 2.2rem 1rem;
   border-radius: 1.4rem;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   cursor: pointer;
   transition: 0.25s;
   display: flex;

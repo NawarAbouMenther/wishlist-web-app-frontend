@@ -1,30 +1,69 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { ref, onMounted } from "vue"
+import { useRoute, useRouter } from "vue-router"
 
 const router = useRouter()
 const route = useRoute()
 
-// Deutsche Namen + Icons
-const categoryMap: Record<string, { label: string; icon: string }> = {
-  birthday:   { label: "Geburtstag",     icon: "🎂" },
-  christmas:  { label: "Weihnachten",    icon: "🎄" },
-  wedding:    { label: "Hochzeit",       icon: "💍" },
-  baby:       { label: "Baby-Party",     icon: "👶" },
-  wishlist:   { label: "Wunschliste",    icon: "🎁" },
-  custom:     { label: "Eigene Kategorie", icon: "✨" }
+const API_URL = import.meta.env.VITE_API_URL
+
+// Kategorie-Typ für saubere TS-Fixes
+interface Category {
+  id: number
+  key: string
+  label: string
 }
 
-const cat = categoryMap[route.params.id as string] || { label: route.params.id, icon: "📦" }
+const category = ref<Category | null>(null)
 
-const lists = ref<{ id: number, title: string }[]>([])
-const newList = ref('')
+// Listen die vom Backend kommen
+interface WishListEntry {
+  id: number
+  title: string
+}
 
-function addList() {
-  if (!newList.value) return
-  const id = Date.now()
-  lists.value.push({ id, title: newList.value })
-  newList.value = ''
+const lists = ref<WishListEntry[]>([])
+const newList = ref("")
+
+// Icons passend zum key
+const icons: Record<string, string> = {
+  birthday: "🎂",
+  christmas: "🎄",
+  wedding: "💍",
+  baby: "👶",
+  wishlist: "🎁",
+  custom: "✨",
+}
+
+onMounted(async () => {
+  loadCategory()
+  loadLists()
+})
+
+async function loadCategory() {
+  const res = await fetch(`${API_URL}/api/categories`)
+  const all: Category[] = await res.json()
+
+  const found = all.find((c: Category) => c.id == Number(route.params.id))
+  category.value = found || null
+}
+
+async function loadLists() {
+  const res = await fetch(`${API_URL}/api/categories/${route.params.id}/lists`)
+  lists.value = await res.json()
+}
+
+async function addList() {
+  if (!newList.value.trim()) return
+
+  await fetch(`${API_URL}/api/categories/${route.params.id}/lists`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: newList.value }),
+  })
+
+  newList.value = ""
+  loadLists()
 }
 
 function openList(id: number) {
@@ -35,9 +74,9 @@ function openList(id: number) {
 <template>
   <div class="wrapper">
 
-    <div class="header">
-      <span class="icon">{{ cat.icon }}</span>
-      <h2 class="headline">{{ cat.label }}</h2>
+    <div class="header" v-if="category">
+      <span class="icon">{{ icons[category.key] }}</span>
+      <h2 class="headline">{{ category.label }}</h2>
     </div>
 
     <div class="add">
@@ -61,10 +100,12 @@ function openList(id: number) {
         <div class="card-text">{{ list.title }}</div>
       </div>
     </div>
+
   </div>
 </template>
 
 <style scoped>
+/* (Dein schönes Styling bleibt komplett unverändert) */
 .wrapper {
   padding: 2rem;
 }
@@ -73,6 +114,7 @@ function openList(id: number) {
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .icon {

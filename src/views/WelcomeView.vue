@@ -1,63 +1,64 @@
+<script setup lang="ts">
+import { useRouter } from "vue-router"
+const router = useRouter()
+
+function goToCategories() {
+  router.push("/categories")
+}
+</script>
+
 <template>
-  <div class="welcome-page">
-    <div class="welcome-box">
-      <span class="icon">🎁</span>
+  <div class="welcome-wrapper">
 
-      <h1 class="title">Willkommen beim<br/>Wunschlisten-Creator</h1>
+    <h1 class="title">Willkommen beim<br>Wunschlisten-Creator 🎀</h1>
 
-      <p class="subtitle">
-        Erstelle deine persönliche Wunschliste — einfach und kostenlos.
-      </p>
+    <p class="subtitle">
+      Erstelle persönliche Wunschlisten für jede Kategorie.
+    </p>
 
-      <router-link to="/categories" class="btn">
-        ➕ Neue Wunschliste erstellen
-      </router-link>
-    </div>
+    <button class="start-btn" @click="goToCategories">
+      ✨ Los geht's!
+    </button>
+
   </div>
 </template>
 
 <style scoped>
-.welcome-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-top: 4rem;
-}
-
-.welcome-box {
+.welcome-wrapper {
   text-align: center;
-}
-
-.icon {
-  font-size: 3rem;
-  display: block;
-  margin-bottom: 1rem;
+  padding-top: 160px;
 }
 
 .title {
-  font-size: 2.2rem;
-  font-weight: 700;
+  font-size: 3rem;
+  font-weight: 900;
+  color: #ed6bc4;
+  text-shadow: 0 4px 20px rgba(255, 105, 180, 0.3);
   margin-bottom: 1rem;
-  color: #333;
 }
 
 .subtitle {
-  color: #555;
-  margin-bottom: 2rem;
+  font-size: 1.3rem;
+  color: #444;
+  margin-bottom: 2.4rem;
 }
 
-.btn {
-  display: inline-block;
-  padding: 1rem 2rem;
-  background: #ed6bc4;
+.start-btn {
+  background: #f162c4;
   color: white;
-  font-size: 1.2rem;
+  padding: 1rem 2rem;
   border-radius: 1rem;
-  text-decoration: none;
-  transition: 0.2s;
+  font-size: 1.4rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: 0.25s ease;
+  box-shadow: 0 8px 20px rgba(255, 105, 180, 0.35);
 }
 
-.btn:hover {
-  transform: scale(1.05);
+.start-btn:hover {
+  transform: translateY(-5px) scale(1.05);
+  background: #ff6ac4;
+  box-shadow: 0 12px 28px rgba(255, 105, 180, 0.45);
 }
 </style>

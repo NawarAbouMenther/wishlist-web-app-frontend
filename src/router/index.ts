@@ -9,9 +9,15 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', name: 'welcome', component: WelcomeView },
+
     { path: '/categories', name: 'categories', component: CategorySelection },
+
     { path: '/category/:id', name: 'category', component: CategoryView },
-    { path: '/wishlist/:id', name: 'wishlist', component: WishList }
+
+    { path: '/wishlist/:id', name: 'wishlist', component: WishList },
+
+    // Catch-all → Falls Seite nicht existiert
+    { path: '/:pathMatch(.*)*', redirect: '/' }
   ]
 })
 
