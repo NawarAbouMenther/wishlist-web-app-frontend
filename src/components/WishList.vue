@@ -15,6 +15,7 @@ interface WishEntry {
 const wishes = ref<WishEntry[]>([])
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
+// FORM INPUT
 const newWish = ref<WishEntry>({
   title: '',
   name: '',
@@ -25,7 +26,10 @@ const newWish = ref<WishEntry>({
   priority: 'mittel'
 })
 
+// EDIT
 const editingWish = ref<WishEntry | null>(null)
+
+// FILTERS
 const sortOrder = ref<'asc' | 'desc'>('asc')
 const filterStatus = ref<'all' | 'fulfilled' | 'open'>('all')
 const filterPriority = ref<'all' | 'hoch' | 'mittel' | 'niedrig'>('all')
@@ -45,6 +49,7 @@ async function addWish() {
   })
 
   await loadWishes()
+
   newWish.value = {
     title: '',
     name: '',
@@ -92,6 +97,7 @@ async function markAsFulfilled(wish: WishEntry) {
   await loadWishes()
 }
 
+// FILTERS + SORT
 const filteredAndSortedWishes = computed(() => {
   let result = [...wishes.value]
 
@@ -113,8 +119,11 @@ const totalPrice = computed(() =>
 
 <template>
   <div class="container">
-    <h2 class="title">🎁 Neuen Wunsch hinzufügen</h2>
 
+    <!-- TITLE -->
+    <h2 class="section-title">🎁 Neuen Wunsch hinzufügen</h2>
+
+    <!-- FORM -->
     <form @submit.prevent="addWish" class="wish-form">
       <input v-model="newWish.title" placeholder="Titel" required />
       <input v-model="newWish.name" placeholder="Name" required />
@@ -128,11 +137,12 @@ const totalPrice = computed(() =>
         <option value="niedrig">Niedrig</option>
       </select>
 
-      <button type="submit">➕ Hinzufügen</button>
+      <button type="submit" class="btn-add">➕ Hinzufügen</button>
     </form>
 
-    <h2 class="title">📋 Meine Wunschliste</h2>
+    <h2 class="section-title">📋 Meine Wunschliste</h2>
 
+    <!-- FILTERS -->
     <div class="controls">
       <div>
         Sortieren:
@@ -156,17 +166,20 @@ const totalPrice = computed(() =>
       </div>
     </div>
 
-    <!-- KARTEN -->
-    <ul class="wish-list">
-      <li
+    <!-- CARD GRID -->
+    <div class="card-grid">
+      <div
         v-for="wish in filteredAndSortedWishes"
         :key="wish.id"
         class="wish-card"
       >
-        <!-- ✅ ERFÜLLT BADGE RECHTS OBEN -->
-        <span v-if="wish.fulfilled" class="fulfilled-badge">✓ erfüllt</span>
+        <!-- BADGE -->
+        <span v-if="wish.fulfilled" class="fulfilled-badge">
+          ✓ erfüllt
+        </span>
 
-        <div v-if="editingWish?.id === wish.id">
+        <!-- EDIT MODE -->
+        <div v-if="editingWish?.id === wish.id" class="edit-fields">
           <input v-model="editingWish!.title" />
           <input v-model="editingWish!.name" />
           <input v-model="editingWish!.description" />
@@ -179,23 +192,25 @@ const totalPrice = computed(() =>
             <option value="niedrig">Niedrig</option>
           </select>
 
-          <button @click="updateWish">💾</button>
-          <button @click="cancelEdit">❌</button>
+          <div class="actions">
+            <button @click="updateWish">💾</button>
+            <button @click="cancelEdit">❌</button>
+          </div>
         </div>
 
+        <!-- DISPLAY MODE -->
         <div v-else>
           <h3 class="wish-title">{{ wish.title }}</h3>
-
-          <p class="description">{{ wish.description }}</p>
+          <p class="wish-desc">{{ wish.description }}</p>
 
           <div class="details">
             <span><strong>Name:</strong> {{ wish.name }}</span>
             <span><strong>Status:</strong> {{ wish.status }}</span>
+            <span class="price">{{ wish.price }} €</span>
           </div>
 
           <div class="meta">
             <span class="badge" :class="wish.priority">{{ wish.priority }}</span>
-            <span class="price">{{ wish.price }} €</span>
           </div>
 
           <div class="actions">
@@ -204,120 +219,161 @@ const totalPrice = computed(() =>
             <button v-if="!wish.fulfilled" @click="markAsFulfilled(wish)">✔️</button>
           </div>
         </div>
-      </li>
-    </ul>
+      </div>
+    </div>
 
+    <!-- TOTAL -->
     <div class="total">Gesamtsumme: {{ totalPrice }} €</div>
+
   </div>
 </template>
 
 <style scoped>
+/* Layout */
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 2rem;
 }
 
-.title {
-  font-size: 1.6rem;
+/* TITLE */
+.section-title {
+  font-size: 2rem;
   font-weight: bold;
-  color: #e840b2;
+  color: #f162c4;
+  margin-top: 2rem;
   margin-bottom: 1rem;
 }
 
-.wish-form,
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.wish-list {
-  list-style: none;
-  padding: 0;
+/* FORM */
+.wish-form {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 2rem;
 }
 
+/* ADD BUTTON – animated */
+.btn-add {
+  background: #f162c4;
+  color: white;
+  border: none;
+  padding: 0.9rem;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: 0.25s ease;
+  box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
+}
+
+.btn-add:hover {
+  background: #ff6cc0;
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 18px rgba(255, 105, 180, 0.45);
+}
+
+/* GRID */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+/* INDIVIDUAL CARD */
 .wish-card {
-  position: relative; /* wichtig für Badge */
   background: white;
+  padding: 1.6rem;
   border-radius: 1.2rem;
-  padding: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transition: 0.25s ease;
+  position: relative;
+  transform: translateY(0px);
 }
 
+.wish-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.15);
+}
+
+/* BADGE */
 .fulfilled-badge {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: #d3f9d8;
-  color: #2f9e44;
-  font-size: 0.75rem;
+  top: 12px;
+  right: 12px;
+  background: #d4f7d4;
+  color: #1a8f3c;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
   font-weight: 700;
-  padding: 0.3rem 0.6rem;
-  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
+/* CARD TEXT */
 .wish-title {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: bold;
+  margin-bottom: .4rem;
 }
 
-.description {
-  color: #555;
-  margin-bottom: 0.75rem;
+.wish-desc {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 1rem;
 }
 
 .details {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.3rem;
   font-size: 0.9rem;
-  color: #444;
-}
-
-.meta {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1rem;
 }
 
 .price {
+  color: #f162c4;
   font-weight: bold;
-  color: #e840b2;
 }
 
+/* PRIORITY BADGES */
 .badge {
-  padding: 0.3rem 0.8rem;
+  margin-top: .7rem;
+  padding: 0.35rem 0.9rem;
   border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-block;
 }
 
-.badge.hoch {
-  background: #ffe3e3;
-  color: #ef20ac;
-}
-.badge.mittel {
-  background: #ffe3e3;
-  color: #da5d98;
-}
-.badge.niedrig {
-  background: #ffe3e3;
-  color: #ed86a9;
-}
+.badge.hoch { background: #ffd3e6; color: #d7006a; }
+.badge.mittel { background: #ffe3f4; color: #ce4f97; }
+.badge.niedrig { background: #fff0f9; color: #d57db0; }
 
+/* ACTION BUTTONS */
 .actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.55rem;
   margin-top: 1rem;
 }
 
+.actions button {
+  background: #f7f7f7;
+  border: none;
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.actions button:hover {
+  background: #ffe0f1;
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* TOTAL */
 .total {
   margin-top: 2rem;
+  font-size: 1.3rem;
   font-weight: bold;
+  color: #f162c4;
 }
 </style>

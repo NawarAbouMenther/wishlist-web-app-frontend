@@ -1,61 +1,96 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="100" height="100" />
+  <div id="app">
+    <!-- 🌟 Header -->
+    <header class="header">
+      <div class="header-content">
+        <img src="/logo.png" alt="Logo" class="logo" @click="$router.push('/')" />
+        <h1 class="title">Wunschlisten-Creator</h1>
+      </div>
+    </header>
 
-    <div class="wrapper">
-      <h1>Meine Wunschliste</h1>
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <main class="main-container">
-    <RouterView />
-  </main>
+    <!-- 🌟 Seiteninhalt -->
+    <main class="main-wrapper">
+      <router-view />
+    </main>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  padding: 2rem 1rem;
-  text-align: center;
+<style>
+/* 🌈 Hintergrund – neues helles Pastell-Design */
+body::before {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 65vw;
+  height: 65vw;
+  background-image: url("/logo.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.07;
+  pointer-events: none;
+  filter: blur(2px);
+  z-index: 0;
 }
 
+
+@keyframes gradientShift {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+/* 🌟 HEADER */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 110px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  z-index: 999;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-left: 35px;
+}
+
+/* 🐻 Logo – größer + Glow */
 .logo {
-  display: block;
-  margin: 0 auto 1rem;
+  height: 110px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.18));
 }
 
-.wrapper {
-  max-width: 1024px;
+.logo:hover {
+  transform: scale(1.10);
+  filter: drop-shadow(0 6px 16px rgb(237, 107, 196));
+}
+
+/* 💖 Titel – helleres Pink */
+.title {
+  font-size: 2.4rem;
+  margin: 0;
+  color: #ed6bc4;
+  font-weight: 800;
+  text-shadow: 0 2px 15px rgba(255, 255, 255, 0.6);
+}
+
+/* 📄 Inhaltsbereich */
+.main-wrapper {
+  padding-top: 150px; /* Platz für Header */
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
 }
-
-h1 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #333;
-}
-
-nav {
-  margin-top: 1rem;
-}
-
-nav a {
-  margin: 0 1rem;
-  color: #555;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-nav a.router-link-exact-active {
-  color: #555555;
-}
-
 </style>
