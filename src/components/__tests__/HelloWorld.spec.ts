@@ -1,11 +1,20 @@
-import { describe, it, expect } from 'vitest'
-
-import { mount } from '@vue/test-utils'
+import { render, screen } from '@testing-library/vue'
 import HelloWorld from '../HelloWorld.vue'
 
-describe('HelloWorld', () => {
-  it('renders properly', () => {
-    const wrapper = mount(HelloWorld, { props: { msg: 'Hello Vitest' } })
-    expect(wrapper.text()).toContain('Hello Vitest')
+describe('HelloWorld.vue', () => {
+  it('renders the greeting text', () => {
+    render(HelloWorld, {
+      props: { msg: 'Test' }
+    })
+
+    expect(screen.getByText('Test')).toBeInTheDocument()
+  })
+
+  it('renders the project creation text', () => {
+    render(HelloWorld, {
+      props: { msg: 'Test' }
+    })
+
+    expect(screen.getByText(/successfully created/)).toBeInTheDocument()
   })
 })
